@@ -1,5 +1,9 @@
 # 开发流程 (Contributing)
 
+## 路线图
+
+开发任务与优先级见 [ROADMAP.md](ROADMAP.md)。
+
 ## 分支策略
 
 - **main** - 稳定版本
