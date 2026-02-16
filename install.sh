@@ -23,6 +23,7 @@ echo "[4/5] 部署配置与 Skills..."
 if [ -d skills ]; then
   cp -r skills/* ~/.openclaw/workspace/skills/ 2>/dev/null || true
 fi
+[ -f templates/CLAUDE.md ] && cp templates/CLAUDE.md ~/.openclaw/workspace/coding/ 2>/dev/null || true
 
 echo "[5/5] 启动 CLIProxyAPI (Docker)..."
 if [ -f "$SCRIPT_DIR/docker-compose.yml" ]; then
