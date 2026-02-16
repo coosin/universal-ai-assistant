@@ -1,0 +1,17 @@
+version: '3.8'
+services:
+  cliproxyapi:
+    image: ghcr.io/router-for-me/cliproxyapi:latest
+    container_name: cliproxyapi
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    volumes:
+      - ~/.cliproxyapi/config:/app/config
+      - ~/.cliproxyapi/auths:/app/auths
+    environment:
+      - CONFIG_PATH=/app/config/config.yaml
+networks:
+  default:
+    name: ai-network

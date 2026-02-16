@@ -1,0 +1,6 @@
+server:
+  port: 8080
+  management_port: 8081
+api_keys:
+  - key: "your-api-key-here"
+    name: "openclaw"

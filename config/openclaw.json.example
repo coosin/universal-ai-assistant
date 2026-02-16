@@ -1,0 +1,17 @@
+{
+  "agent": {
+    "model": "anthropic-claude-code/claude-opus-4-6",
+    "baseURL": "http://localhost:8080/v1",
+    "apiKey": "YOUR_CLIPROXYAPI_KEY",
+    "fallbacks": ["groq/llama-3.1-70b-versatile"]
+  },
+  "agents": {
+    "list": [
+      { "id": "coding", "model": "anthropic-claude-code/claude-opus-4-6", "baseURL": "http://localhost:8080/v1", "apiKey": "YOUR_CLIPROXYAPI_KEY", "tools": { "profile": "coding" } },
+      { "id": "moneymaker", "model": "anthropic-claude-code/claude-opus-4-6", "baseURL": "http://localhost:8080/v1", "apiKey": "YOUR_CLIPROXYAPI_KEY", "tools": { "profile": "full" } },
+      { "id": "analytics", "model": "groq/llama-3.1-70b-versatile", "tools": { "allow": ["exec", "read", "write", "message"] } }
+    ]
+  },
+  "cron": { "enabled": true },
+  "gateway": { "bind": "127.0.0.1", "port": 18789 }
+}

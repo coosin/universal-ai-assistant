@@ -1,0 +1,25 @@
+# Node.js
+node_modules/
+npm-debug.log*
+
+# OpenClaw / CLIProxyAPI
+.openclaw/
+.cliproxyapi/auths/
+.cliproxyapi/config/config.yaml
+
+# Python
+__pycache__/
+*.py[cod]
+venv/
+.venv
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+*.tmp
+*.bak
+*.log
+secrets/
+*.key
+*_secret*
