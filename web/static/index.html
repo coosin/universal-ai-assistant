@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Universal AI Assistant - 管理</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Universal AI Assistant</h1>
+      <p class="subtitle">Web 管理界面</p>
+    </header>
+
+    <section class="card">
+      <h2>服务状态</h2>
+      <div id="status" class="status-grid"></div>
+      <button type="button" class="btn" id="btnRefresh">刷新状态</button>
+    </section>
+
+    <section class="card">
+      <h2>配置校验</h2>
+      <pre id="validateOutput" class="output">点击「运行校验」查看结果</pre>
+      <button type="button" class="btn" id="btnValidate">运行校验</button>
+    </section>
+
+    <section class="card">
+      <h2>健康检查</h2>
+      <pre id="healthOutput" class="output">点击「运行检查」查看结果</pre>
+      <button type="button" class="btn" id="btnHealth">运行检查</button>
+    </section>
+
+    <section class="card links">
+      <h2>快捷链接</h2>
+      <ul>
+        <li><a href="http://localhost:8081/management.html" target="_blank" rel="noopener">CLIProxyAPI 管理面板</a></li>
+        <li><a href="https://github.com/coosin/universal-ai-assistant" target="_blank" rel="noopener">GitHub 仓库</a></li>
+      </ul>
+    </section>
+
+    <footer>
+      <p>从项目根目录启动: <code>python3 web/app.py</code> 或 <code>./scripts/start_web.sh</code></p>
+    </footer>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>

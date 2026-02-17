@@ -21,6 +21,11 @@ chmod +x install.sh start.sh
 
 # 首次配置可用向导生成 openclaw.json
 python3 scripts/config_wizard.py
+
+# Web 管理界面（可选）
+pip install -r web/requirements.txt
+python3 web/app.py
+# 浏览器打开 http://127.0.0.1:8888 或执行 ./scripts/start_web.sh
 ```
 
 ## 一键自动流程（推送与开发准备）

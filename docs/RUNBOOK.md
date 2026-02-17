@@ -48,6 +48,16 @@ docker compose up -d
 openclaw gateway --port 18789 --verbose
 ```
 
+## 5.1 Web 管理界面（可选）
+
+```bash
+cd /home/cool/universal-ai-assistant
+pip install -r web/requirements.txt
+python3 web/app.py
+# 或: ./scripts/start_web.sh
+```
+浏览器打开 http://127.0.0.1:8888 可查看状态、运行配置校验与健康检查。
+
 ## 6. 首次对话
 
 ```bash
