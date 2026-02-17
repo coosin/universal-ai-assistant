@@ -5,7 +5,22 @@
 ## 快速开始
 
 ```bash
-chmod +x install.sh && ./install.sh
+# 安装（Node.js 22+ 与 Docker 需已安装）
+chmod +x install.sh start.sh
+./install.sh
+
+# 配置后启动
+./start.sh
+# 或: openclaw gateway --port 18789 --verbose
+
+# 校验配置与环境
+./scripts/validate_config.sh
+./scripts/health_check.sh
+# 或一键诊断
+./scripts/doctor.sh
+
+# 首次配置可用向导生成 openclaw.json
+python3 scripts/config_wizard.py
 ```
 
 ## 一键自动流程（推送与开发准备）
