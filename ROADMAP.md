@@ -19,8 +19,9 @@
 ## 阶段三：体验与扩展
 
 - [x] 健康检查脚本：scripts/health_check.sh
-- [ ] 可选：Web 配置向导或配置校验
-- [ ] 更多 Skill 模板与示例
+- [x] 配置校验：scripts/validate_config.sh
+- [x] 更多 Skill 模板：research（调研）、daily（每日简报）
+- [ ] 可选：Web 配置向导
 
 ## 分支与发布
 
