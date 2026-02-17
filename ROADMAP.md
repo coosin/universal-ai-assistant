@@ -21,7 +21,8 @@
 - [x] 健康检查脚本：scripts/health_check.sh
 - [x] 配置校验：scripts/validate_config.sh
 - [x] 更多 Skill 模板：research（调研）、daily（每日简报）
-- [ ] 可选：Web 配置向导
+- [x] 配置向导：scripts/config_wizard.py（CLI 交互式）
+- [x] 一键诊断：scripts/doctor.sh
 
 ## 分支与发布
 

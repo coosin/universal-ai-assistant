@@ -25,10 +25,14 @@ chmod +x install.sh start.sh
 
 ## 4. 配置 OpenClaw
 
-编辑 `~/.openclaw/openclaw.json`：
+方式一（推荐）：运行配置向导
 
-- 将 `YOUR_CLIPROXYAPI_KEY` 替换为上一步的 API Key
-- 可选：配置 `channels.telegram` 等
+```bash
+python3 scripts/config_wizard.py
+# 按提示输入 CLIProxyAPI API Key、可选 Telegram 等
+```
+
+方式二：手动编辑 `~/.openclaw/openclaw.json`，将 `YOUR_CLIPROXYAPI_KEY` 替换为上一步的 API Key，可选配置 `channels.telegram` 等
 
 ## 5. 启动服务
 
@@ -55,10 +59,11 @@ openclaw agent --message "请帮我想办法挣点零花钱" --agent moneymaker
 ## 校验与健康检查
 
 ```bash
-# 配置是否正确
-./scripts/validate_config.sh
+# 一键诊断（配置 + 环境）
+./scripts/doctor.sh
 
-# 环境与端口
+# 或分别执行
+./scripts/validate_config.sh
 ./scripts/health_check.sh
 ```
 
