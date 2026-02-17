@@ -23,6 +23,7 @@
 - [x] 更多 Skill 模板：research（调研）、daily（每日简报）
 - [x] 配置向导：scripts/config_wizard.py（CLI 交互式）
 - [x] 一键诊断：scripts/doctor.sh
+- [x] Web 管理界面：web/app.py + 静态仪表盘（状态 / 校验 / 健康检查）
 
 ## 分支与发布
 

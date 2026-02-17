@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Web 管理界面：`web/app.py` + 静态仪表盘（服务状态、配置校验、健康检查、快捷链接）
 - CLI 配置向导：`scripts/config_wizard.py`
 - 一键诊断：`scripts/doctor.sh`
 
