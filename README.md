@@ -16,6 +16,11 @@ chmod +x install.sh start.sh
 # 校验配置与环境
 ./scripts/validate_config.sh
 ./scripts/health_check.sh
+# 或一键诊断
+./scripts/doctor.sh
+
+# 首次配置可用向导生成 openclaw.json
+python3 scripts/config_wizard.py
 ```
 
 ## 一键自动流程（推送与开发准备）
