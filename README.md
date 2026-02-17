@@ -12,6 +12,10 @@ chmod +x install.sh start.sh
 # 配置后启动
 ./start.sh
 # 或: openclaw gateway --port 18789 --verbose
+
+# 校验配置与环境
+./scripts/validate_config.sh
+./scripts/health_check.sh
 ```
 
 ## 一键自动流程（推送与开发准备）

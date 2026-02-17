@@ -52,6 +52,16 @@ openclaw agent --message "你好，请介绍一下你能做什么"
 openclaw agent --message "请帮我想办法挣点零花钱" --agent moneymaker
 ```
 
+## 校验与健康检查
+
+```bash
+# 配置是否正确
+./scripts/validate_config.sh
+
+# 环境与端口
+./scripts/health_check.sh
+```
+
 ## 常见问题
 
 - **端口被占用**：修改 openclaw.json 中 gateway.port 或 docker-compose 端口映射
