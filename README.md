@@ -33,6 +33,10 @@ python3 scripts/config_wizard.py
 pip install -r web/requirements.txt
 python3 web/app.py
 # 浏览器打开 http://127.0.0.1:8888 或执行 ./scripts/start_web.sh
+
+# 一键启动所有服务（Gateway + Web + CLIProxyAPI 若镜像已存在）
+./scripts/start_all_services.sh              # Gateway 前台
+./scripts/start_all_services.sh --background # 全部后台
 ```
 
 ## 一键自动流程（推送与开发准备）
