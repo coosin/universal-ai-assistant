@@ -10,7 +10,10 @@ command -v node >/dev/null 2>&1 || { echo "请先安装 Node.js 22+"; exit 1; }
 command -v docker >/dev/null 2>&1 || { echo "请先安装 Docker"; exit 1; }
 
 echo "[2/5] 安装 OpenClaw..."
-npm install -g openclaw@latest
+if ! npm install -g openclaw@latest 2>/dev/null; then
+  echo "  无写权限，使用 sudo 安装..."
+  sudo npm install -g openclaw@latest
+fi
 
 echo "[3/5] 创建配置与工作区目录..."
 mkdir -p ~/.openclaw/workspace/coding ~/.openclaw/workspace/moneymaker ~/.openclaw/workspace/analytics
@@ -33,5 +36,5 @@ fi
 echo ""
 echo "[SUCCESS] 安装完成。"
 echo "  1. 编辑 ~/.openclaw/openclaw.json 填入 API Key"
-echo "  2. 访问 http://localhost:8081/management.html 配置 CLIProxyAPI"
+echo "  2. 访问 http://localhost:8317/management.html 配置 CLIProxyAPI"
 echo "  3. 运行 start.sh 或执行: openclaw gateway --port 18789 --verbose"

@@ -1,0 +1,4 @@
+#!/bin/bash
+# 快速提交并推送（简化版，在仓库根目录直接执行）
+# 用法: ./git-push [提交信息]
+exec "$(dirname "$0")/scripts/git_quick_push.sh" "$@"

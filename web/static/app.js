@@ -14,8 +14,7 @@
   function renderStatus(data) {
     var items = [
       { key: "gateway_18789", label: "Gateway 18789", ok: data.gateway_18789 },
-      { key: "cliproxyapi_8080", label: "CLIProxyAPI 8080", ok: data.cliproxyapi_8080 },
-      { key: "cliproxyapi_8081", label: "CLIProxyAPI 8081", ok: data.cliproxyapi_8081 },
+      { key: "cliproxyapi_8317", label: "CLIProxyAPI 8317", ok: data.cliproxyapi_8317 },
       { key: "openclaw_config", label: "OpenClaw 配置", ok: data.openclaw_config },
       { key: "cliproxyapi_config", label: "CLIProxyAPI 配置", ok: data.cliproxyapi_config },
     ];

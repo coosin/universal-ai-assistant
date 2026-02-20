@@ -1,6 +1,30 @@
-server:
-  port: 8080
-  management_port: 8081
-api_keys:
-  - key: "your-api-key-here"
-    name: "openclaw"
+# CLIProxyAPI 配置示例（官方格式，端口 8317）
+# 复制到 ~/.cliproxyapi/config/config.yaml 使用
+host: ""
+port: 8317
+
+remote-management:
+  # 从 Windows 访问 WSL 的 8317 视为“远程”，需设为 true 才能打开管理界面
+  allow-remote: true
+  # 留空会禁用管理接口；填写后首次启动会被加密写回，管理界面登录时输入此密钥（明文）
+  secret-key: "openclaw-management"
+  disable-control-panel: false
+
+auth-dir: "/root/.cli-proxy-api"
+
+api-keys:
+  - "your-api-key-here"
+
+debug: false
+
+# （可选）把 OpenRouter 当作一个 OpenAI 兼容后端接入 CLIProxyAPI
+# 适合把 OpenRouter 的模型也统一走 CLIProxyAPI 的 /v1 接口
+#
+# openai-compatibility:
+#   - name: "openrouter"
+#     base-url: "https://openrouter.ai/api/v1"
+#     api-key-entries:
+#       - api-key: "sk-or-v1-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+#     models:
+#       - name: "openrouter/free"
+#         alias: "openrouter-free"

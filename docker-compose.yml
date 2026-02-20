@@ -1,17 +1,17 @@
-version: '3.8'
+# 使用 Docker Hub 官方镜像 eceasy/cli-proxy-api（勿用 ghcr.io，易 403 denied）
 services:
   cliproxyapi:
-    image: ghcr.io/router-for-me/cliproxyapi:latest
+    image: eceasy/cli-proxy-api:latest
     container_name: cliproxyapi
     restart: unless-stopped
     ports:
-      - "8080:8080"
-      - "8081:8081"
+      - "8317:8317"
+      - "54545:54545"
     volumes:
-      - ~/.cliproxyapi/config:/app/config
-      - ~/.cliproxyapi/auths:/app/auths
+      - ~/.cliproxyapi/config/config.yaml:/CLIProxyAPI/config.yaml
+      - ~/.cliproxyapi/auths:/root/.cli-proxy-api
     environment:
-      - CONFIG_PATH=/app/config/config.yaml
+      - CONFIG_PATH=/CLIProxyAPI/config.yaml
 networks:
   default:
     name: ai-network
