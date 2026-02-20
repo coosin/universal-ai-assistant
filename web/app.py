@@ -8,7 +8,11 @@ import subprocess
 import sys
 from pathlib import Path
 
-from flask import Flask, jsonify, send_from_directory
+try:
+    from flask import Flask, jsonify, send_from_directory
+except ImportError:
+    print("请先安装依赖: pip install -r web/requirements.txt")
+    sys.exit(1)
 
 # 项目根目录（web 的上一级）
 ROOT = Path(__file__).resolve().parent.parent
@@ -56,8 +60,7 @@ def index():
 def api_status():
     return jsonify({
         "gateway_18789": port_open(18789),
-        "cliproxyapi_8080": port_open(8080),
-        "cliproxyapi_8081": port_open(8081),
+        "cliproxyapi_8317": port_open(8317),
         "openclaw_config": (Path.home() / ".openclaw" / "openclaw.json").exists(),
         "cliproxyapi_config": (Path.home() / ".cliproxyapi" / "config" / "config.yaml").exists(),
     })
@@ -78,7 +81,21 @@ def api_validate():
 def main():
     port = int(os.environ.get("PORT", 8888))
     host = os.environ.get("HOST", "0.0.0.0")
-    print(f"Web 管理界面: http://127.0.0.1:{port}")
+    print("")
+    print("  Web 管理界面已启动，在浏览器中打开以下地址之一：")
+    print("    http://127.0.0.1:%s" % port)
+    print("    http://localhost:%s" % port)
+    if os.name != "nt":
+        try:
+            out = subprocess.run(["hostname", "-I"], capture_output=True, text=True, timeout=2, cwd=ROOT)
+            if out.returncode == 0 and out.stdout.strip():
+                ip = out.stdout.strip().split()[0]
+                if ip and not ip.startswith("127."):
+                    print("    http://%s:%s  (本机/WSL IP，若上面打不开可试此地址)" % (ip, port))
+        except Exception:
+            pass
+    print("  按 Ctrl+C 停止服务")
+    print("")
     app.run(host=host, port=port, debug=False, threaded=True)
 
 

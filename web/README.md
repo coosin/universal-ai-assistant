@@ -22,7 +22,8 @@ python3 web/app.py
 ./scripts/start_web.sh
 ```
 
-默认端口 8888，浏览器打开 http://127.0.0.1:8888 。
+默认端口 8888，浏览器打开 http://127.0.0.1:8888 或 http://localhost:8888 。  
+**打不开时**请看 [TROUBLESHOOTING.md](TROUBLESHOOTING.md)（WSL/IP/端口/防火墙等）。
 
 ## 环境变量
 

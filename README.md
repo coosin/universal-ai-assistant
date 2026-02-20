@@ -8,8 +8,15 @@
 # 安装（Node.js 22+ 与 Docker 需已安装）
 chmod +x install.sh start.sh
 ./install.sh
+```
 
-# 配置后启动
+**正式跑起来**（配置 API Key → 启动 → 对话）请按 **[docs/正式跑起来.md](docs/正式跑起来.md)** 一步步做。
+
+- **国内网络/代理**：`start.sh` 会自动加载项目根目录的 `.env`（参考 `.env.example`），用于配置 `HTTP_PROXY/HTTPS_PROXY`、`OPENROUTER_API_KEY` 等。
+- **Telegram**：首次私聊 Bot 会给出配对码，按文档执行 `openclaw pairing approve telegram <code>` 授权即可。
+
+```bash
+# 配置好后启动
 ./start.sh
 # 或: openclaw gateway --port 18789 --verbose
 
@@ -60,3 +67,8 @@ git push -u origin main && git push -u origin develop
 ## 开发流程
 
 见 [CONTRIBUTING.md](CONTRIBUTING.md) 与 [GIT_SETUP.md](GIT_SETUP.md)。
+
+## 复盘与排障
+
+- 过程总结与最终收尾清单：`docs/开发复盘与收尾.md`
+- OpenClaw 调用链路与“计费不足”来源：`docs/OpenClaw与CLIProxy调用逻辑.md`

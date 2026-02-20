@@ -19,7 +19,7 @@ chmod +x install.sh start.sh
 
 ## 3. 配置 CLIProxyAPI
 
-1. 浏览器打开: http://localhost:8081/management.html
+1. 浏览器打开: http://localhost:8317/management.html
 2. 添加 Claude Code（或其它 OAuth）账号，完成认证
 3. 在配置中复制 API Key
 

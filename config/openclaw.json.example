@@ -1,17 +1,47 @@
 {
-  "agent": {
-    "model": "anthropic-claude-code/claude-opus-4-6",
-    "baseURL": "http://localhost:8080/v1",
-    "apiKey": "YOUR_CLIPROXYAPI_KEY",
-    "fallbacks": ["groq/llama-3.1-70b-versatile"]
+  "gateway": {
+    "mode": "local",
+    "bind": "loopback",
+    "port": 18789,
+    "auth": {
+      "token": "local-dev-token"
+    },
+    "remote": {
+      "token": "local-dev-token"
+    }
+  },
+  "models": {
+    "mode": "merge",
+    "providers": {
+      "cliproxy": {
+        "baseUrl": "http://localhost:8317/v1",
+        "apiKey": "YOUR_CLIPROXYAPI_KEY",
+        "api": "openai-completions",
+        "models": [
+          { "id": "claude-opus-4-1-20250805", "name": "Claude Opus (CLIProxy)" },
+          { "id": "claude-sonnet-4-5-20250929", "name": "Claude Sonnet" },
+          { "id": "groq/llama-3.1-70b-versatile", "name": "Llama 70B (Groq)" }
+        ]
+      }
+    }
   },
   "agents": {
+    "defaults": {
+      "model": {
+        "primary": "cliproxy/claude-opus-4-1-20250805",
+        "fallbacks": ["cliproxy/claude-sonnet-4-5-20250929", "cliproxy/groq/llama-3.1-70b-versatile"]
+      },
+      "models": {
+        "cliproxy/claude-opus-4-1-20250805": { "alias": "opus" },
+        "cliproxy/claude-sonnet-4-5-20250929": { "alias": "sonnet" },
+        "cliproxy/groq/llama-3.1-70b-versatile": { "alias": "llama" }
+      }
+    },
     "list": [
-      { "id": "coding", "model": "anthropic-claude-code/claude-opus-4-6", "baseURL": "http://localhost:8080/v1", "apiKey": "YOUR_CLIPROXYAPI_KEY", "tools": { "profile": "coding" } },
-      { "id": "moneymaker", "model": "anthropic-claude-code/claude-opus-4-6", "baseURL": "http://localhost:8080/v1", "apiKey": "YOUR_CLIPROXYAPI_KEY", "tools": { "profile": "full" } },
-      { "id": "analytics", "model": "groq/llama-3.1-70b-versatile", "tools": { "allow": ["exec", "read", "write", "message"] } }
+      { "id": "coding", "default": true, "model": "cliproxy/claude-opus-4-1-20250805", "tools": { "profile": "coding" } },
+      { "id": "moneymaker", "model": "cliproxy/claude-opus-4-1-20250805", "tools": { "profile": "full" } },
+      { "id": "analytics", "model": "cliproxy/groq/llama-3.1-70b-versatile", "tools": { "allow": ["exec", "read", "write", "message"] } }
     ]
   },
-  "cron": { "enabled": true },
-  "gateway": { "bind": "127.0.0.1", "port": 18789 }
+  "cron": { "enabled": true }
 }
