@@ -87,7 +87,6 @@ ALLOWED_SCRIPTS = {
     "sync_remote_config": "scripts/sync_remote_config.sh",
     "start_cliproxyapi": "scripts/start_cliproxyapi.sh",
     "health_check": "scripts/health_check.sh",
-    "sync_install_cron": "scripts/sync_install_cron.sh",
 }
 
 
@@ -134,7 +133,6 @@ def api_commands():
             {"id": "git_pull", "label": "Git 拉取", "cmd": "cd ~/universal-ai-assistant && ./scripts/git_pull.sh", "runnable": True},
             {"id": "git_quick_push", "label": "Git 快速推送", "cmd": "cd ~/universal-ai-assistant && ./scripts/git_quick_push.sh \"auto: 更新\"", "runnable": True},
             {"id": "sync_remote_config", "label": "从仓库同步配置", "cmd": "cd ~/universal-ai-assistant && ./scripts/sync_remote_config.sh", "runnable": True},
-            {"id": "sync_install_cron", "label": "安装 home→myhome 自动同步", "cmd": "cd ~/universal-ai-assistant && bash scripts/sync_install_cron.sh", "runnable": True, "note": "需先配 SSH 免密到 myhome"},
         ]
     })
 

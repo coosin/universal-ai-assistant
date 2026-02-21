@@ -42,32 +42,6 @@ cd /home/cool/universal-ai-assistant
 ./scripts/doctor.sh
 ```
 
-## home → myhome 自动同步
-
-home 上的记录（记忆库、sessions 等）每 30 分钟自动推送到 myhome。
-
-**配置步骤：**
-
-1. 在 home 的 `~/.ssh/config` 添加：
-   ```
-   Host myhome
-       HostName 192.168.1.2
-       User cool
-   ```
-   （HostName 为 myhome 的 IP，确保 home 能 SSH 到 myhome）
-
-2. 配置免密：`ssh-copy-id myhome`
-
-3. 安装 cron：
-   ```bash
-   cd ~/universal-ai-assistant
-   bash scripts/sync_install_cron.sh
-   ```
-
-**同步范围**：`~/.openclaw/`、`~/.cliproxyapi/`
-
----
-
 ## 访问地址（从本机或局域网）
 
 - Web 管理: http://\<本机IP\>:9080 或 :8888  
