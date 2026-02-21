@@ -23,6 +23,8 @@ git push origin main
 
 首次连接会提示 `Are you sure you want to continue connecting?`，输入 `yes` 即可。
 
+**home 无直连外网时**：已在 `~/.ssh/config` 为 `Host github.com` 配置 `ProxyCommand nc -X 5 -x 127.0.0.1:7891 %h %p`，推送会经本机 Clash SOCKS5（7891）。确保 Clash 已启动；面板「Git 快速推送」同样走该配置。
+
 ## 3. 改回 HTTPS（可选）
 
 若以后想用 HTTPS：
