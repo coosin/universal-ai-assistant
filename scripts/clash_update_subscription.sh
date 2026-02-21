@@ -28,9 +28,22 @@ if curl -sSL -f --connect-timeout 30 -o "$TMP" "$URL"; then
   fi
   if [ "$(id -u)" = "0" ]; then
     cp "$TMP" "$CONFIG_DEST"
-    systemctl restart clash 2>/dev/null && echo "  已重启 clash" || echo "  请手动: sudo systemctl restart clash"
   else
     sudo cp "$TMP" "$CONFIG_DEST"
+  fi
+  # 注入 DNS 修复，避免国内无法解析代理节点域名（订阅覆盖后自动保留）
+  _run() { [ "$(id -u)" = "0" ] && "$@" || sudo "$@"; }
+  if ! _run grep -q 'proxy-server-nameserver' "$CONFIG_DEST"; then
+    _run sed -i '/^  fallback:/i\  proxy-server-nameserver:\n    - system' "$CONFIG_DEST"
+    echo "  已注入 proxy-server-nameserver: system"
+  fi
+  if ! _run grep -q '127.0.0.53' "$CONFIG_DEST"; then
+    _run sed -i '/^  nameserver:/a\    - 127.0.0.53' "$CONFIG_DEST"
+    echo "  已注入 nameserver: 127.0.0.53"
+  fi
+  if [ "$(id -u)" = "0" ]; then
+    systemctl restart clash 2>/dev/null && echo "  已重启 clash" || echo "  请手动: sudo systemctl restart clash"
+  else
     sudo systemctl restart clash 2>/dev/null && echo "  已重启 clash" || echo "  请手动: sudo systemctl restart clash"
   fi
   rm -f "$TMP"
