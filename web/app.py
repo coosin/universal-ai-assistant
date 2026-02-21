@@ -78,6 +78,63 @@ def api_validate():
     return jsonify({"ok": ok, "output": output})
 
 
+# 常用命令白名单（仅允许执行这些脚本）
+ALLOWED_SCRIPTS = {
+    "doctor": "scripts/doctor.sh",
+    "start_all_services": "scripts/start_all_services.sh",
+    "git_pull": "scripts/git_pull.sh",
+    "git_quick_push": "scripts/git_quick_push.sh",
+    "sync_remote_config": "scripts/sync_remote_config.sh",
+}
+
+
+@app.route("/api/run/<script_id>")
+def api_run_script(script_id):
+    if script_id not in ALLOWED_SCRIPTS:
+        return jsonify({"ok": False, "output": "未知命令"}), 400
+    path = ALLOWED_SCRIPTS[script_id]
+    args = []
+    if script_id == "start_all_services":
+        args = ["--background"]
+    elif script_id == "git_quick_push":
+        args = ["auto: 更新"]  # 默认提交信息
+    full_path = ROOT / path
+    if not full_path.exists():
+        return jsonify({"ok": False, "output": f"脚本不存在: {path}"}), 404
+    try:
+        proc = subprocess.run(
+            ["bash", str(full_path)] + args,
+            capture_output=True,
+            text=True,
+            timeout=60,
+            cwd=ROOT,
+            env={**os.environ, "HOME": os.environ.get("HOME", str(Path.home()))},
+        )
+        out = (proc.stdout or "") + (proc.stderr or "")
+        return jsonify({"ok": proc.returncode == 0, "output": out})
+    except subprocess.TimeoutExpired:
+        return jsonify({"ok": False, "output": "执行超时"}), 500
+    except Exception as e:
+        return jsonify({"ok": False, "output": str(e)}), 500
+
+
+@app.route("/api/commands")
+def api_commands():
+    """返回常用命令列表，供面板展示"""
+    return jsonify({
+        "commands": [
+            {"id": "start_all_services", "label": "一键启动（后台）", "cmd": "cd ~/universal-ai-assistant && ./scripts/start_all_services.sh --background", "runnable": True},
+            {"id": "doctor", "label": "Doctor 完整检查", "cmd": "./scripts/doctor.sh", "runnable": True},
+            {"id": "port_forward", "label": "端口转发状态", "cmd": "sudo bash scripts/port_forward.sh status", "runnable": False},
+            {"id": "sync_to_home", "label": "同步 myhome→home", "cmd": "cd ~/universal-ai-assistant && bash scripts/sync_myhome_to_home.sh", "runnable": False, "note": "在 myhome 执行"},
+            {"id": "sync_from_home", "label": "同步 home→myhome", "cmd": "cd ~/universal-ai-assistant && bash scripts/sync_pull_from_home.sh", "runnable": False, "note": "在 myhome 执行"},
+            {"id": "git_pull", "label": "Git 拉取", "cmd": "cd ~/universal-ai-assistant && ./scripts/git_pull.sh", "runnable": True},
+            {"id": "git_quick_push", "label": "Git 快速推送", "cmd": "cd ~/universal-ai-assistant && ./scripts/git_quick_push.sh \"auto: 更新\"", "runnable": True},
+            {"id": "sync_remote_config", "label": "从仓库同步配置", "cmd": "cd ~/universal-ai-assistant && ./scripts/sync_remote_config.sh", "runnable": True, "note": "会覆盖本地 openclaw.json 等"},
+        ]
+    })
+
+
 def main():
     port = int(os.environ.get("PORT", 8888))
     host = os.environ.get("HOST", "0.0.0.0")

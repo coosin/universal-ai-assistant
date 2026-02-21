@@ -40,6 +40,45 @@ cd /home/cool/universal-ai-assistant
 ./scripts/doctor.sh
 ```
 
+## 双机同步（myhome ↔ home）
+
+- **myhome**：你本机 WSL2（Ubuntu），从 Windows `ssh myhome` 进入。
+- **home**：局域网服务器（当前部署的这台）。home 无法直连 WSL，所以同步要在 **myhome（WSL）上** 做推送。
+
+**把 myhome 的配置推到 home（在 WSL 里执行）：**
+
+1. 在 WSL 的 `~/.ssh/config` 里加一段，例如：
+   ```
+   Host home
+       HostName 192.168.1.100
+       User cool
+   ```
+   （HostName 改成 home 的实际 IP，和本机 `ip addr` 里一致。）
+
+2. 在 WSL 里进入项目目录，执行：
+   ```bash
+   bash scripts/sync_myhome_to_home.sh
+   ```
+
+3. **同步范围**（完整）：
+   | 内容 | 说明 |
+   |------|------|
+   | `~/.openclaw/` | openclaw.json、**workspace/memory**（记忆库）、workspace-*、agents/sessions、devices 等（排除 logs） |
+   | `~/.cliproxyapi/` | config.yaml、auths 等 |
+   | `~/universal-ai-assistant/.env` | API Key 等环境变量 |
+   | `~/universal-ai-assistant/scripts/` | 脚本 |
+   | `~/universal-ai-assistant/web/` | Web 管理界面 |
+   | `~/universal-ai-assistant/config/` | 配置示例 |
+
+4. **反向同步（home → myhome）**：若主要在 home 上使用控制界面，记忆会写在 home 上。在 myhome 执行以下命令可拉取 home 的记忆库：
+   ```bash
+   bash scripts/sync_pull_from_home.sh
+   ```
+
+5. **若 auths 同步失败**（Permission denied）：在 myhome 执行 `chmod 644 ~/.cliproxyapi/auths/*.json` 后重试。
+
+---
+
 ## 访问地址（从本机或局域网）
 
 - Web 管理: http://\<本机IP\>:9080 或 :8888  

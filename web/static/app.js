@@ -86,4 +86,83 @@
   });
 
   fetchStatus();
+
+  // 常用命令
+  var commandsList = document.getElementById("commandsList");
+  function renderCommands(commands) {
+    if (!commands || !commands.length) return;
+    commandsList.innerHTML = commands
+      .map(function (c) {
+        var note = c.note ? '<span class="cmd-note">' + c.note + "</span>" : "";
+        var runBtn = c.runnable
+          ? '<button type="button" class="btn btn-sm" data-cmd-id="' + c.id + '">执行</button>'
+          : "";
+        return (
+          '<div class="cmd-row">' +
+          '<div class="cmd-main">' +
+          '<span class="cmd-label">' + c.label + "</span>" +
+          note +
+          "</div>" +
+          '<div class="cmd-actions">' +
+          '<button type="button" class="btn btn-sm btn-copy" data-cmd="' + escapeHtml(c.cmd) + '">复制</button> ' +
+          runBtn +
+          "</div>" +
+          '<code class="cmd-text">' + escapeHtml(c.cmd) + "</code>" +
+          "</div>"
+        );
+      })
+      .join("");
+    commandsList.querySelectorAll(".btn-copy").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var cmd = btn.dataset.cmd;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(cmd).then(function () {
+            btn.textContent = "已复制";
+            setTimeout(function () {
+              btn.textContent = "复制";
+            }, 1500);
+          });
+        } else {
+          prompt("复制以下命令：", cmd);
+        }
+      });
+    });
+    commandsList.querySelectorAll("[data-cmd-id]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var id = btn.dataset.cmdId;
+        var orig = btn.textContent;
+        btn.disabled = true;
+        btn.textContent = "运行中…";
+        fetch("/api/run/" + id)
+          .then(function (r) {
+            return r.json();
+          })
+          .then(function (d) {
+            alert(d.ok ? "执行完成" : "执行失败\n\n" + (d.output || ""));
+          })
+          .catch(function (e) {
+            alert("请求失败: " + e.message);
+          })
+          .finally(function () {
+            btn.disabled = false;
+            btn.textContent = orig;
+          });
+      });
+    });
+  }
+  function escapeHtml(s) {
+    var d = document.createElement("div");
+    d.textContent = s;
+    return d.innerHTML;
+  }
+  fetch("/api/commands")
+    .then(function (r) {
+      return r.json();
+    })
+    .then(function (d) {
+      renderCommands(d.commands || []);
+    })
+    .catch(function () {
+      commandsList.innerHTML = '<p class="muted">无法加载命令列表</p>';
+    });
 })();

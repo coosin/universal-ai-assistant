@@ -47,6 +47,16 @@ case "$action" in
     if ! sudo iptables -t nat -C OUTPUT -p tcp -d 127.0.0.1 --dport 18790 -j DNAT --to-destination 127.0.0.1:18789 2>/dev/null; then
       sudo iptables -t nat -A OUTPUT -p tcp -d 127.0.0.1 --dport 18790 -j DNAT --to-destination 127.0.0.1:18789
     fi
+    # 本机用公网 IP 访问 18790 时也 DNAT（本机 IP，可按需改为 $(hostname -I | awk '{print $1}')）
+    if ! sudo iptables -t nat -C OUTPUT -p tcp -d 192.168.1.100 --dport 18790 -j DNAT --to-destination 127.0.0.1:18789 2>/dev/null; then
+      sudo iptables -t nat -A OUTPUT -p tcp -d 192.168.1.100 --dport 18790 -j DNAT --to-destination 127.0.0.1:18789
+    fi
+    # 外网访问 18790 需 DNAT 到 127.0.0.1，并启用 route_localnet
+    if [ -f /etc/sysctl.d/99-route-localnet.conf ] 2>/dev/null; then
+      sudo sysctl -p /etc/sysctl.d/99-route-localnet.conf 2>/dev/null || true
+    else
+      echo "  建议执行: echo 'net.ipv4.conf.all.route_localnet=1' | sudo tee /etc/sysctl.d/99-route-localnet.conf && sudo sysctl -p /etc/sysctl.d/99-route-localnet.conf"
+    fi
     echo ""
     echo "端口转发已启用。从其他机器访问本机时可用："
     echo "  Web 管理:    http://<本机IP>:9080"

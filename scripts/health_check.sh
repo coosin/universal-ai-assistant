@@ -21,7 +21,7 @@ check curl 2>/dev/null || echo "[WARN] curl 未安装（网络连通性检查将
 echo ""
 
 echo "端口占用:"
-for port in 18789 8317 8888; do
+for port in 18789 8317; do
     if (ss -tlnp 2>/dev/null || netstat -tlnp 2>/dev/null) | grep -q ":$port "; then
         echo "  [IN USE] $port"
     else
