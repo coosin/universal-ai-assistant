@@ -87,6 +87,20 @@
 
   fetchStatus();
 
+  // 快捷链接：CLIProxyAPI 统一用 8317，Gateway 本机 18789 / 远程 18790
+  (function () {
+    var host = window.location.hostname;
+    var isLocal = host === "localhost" || host === "127.0.0.1";
+    var ports = { cliproxy: 8317, gateway: isLocal ? 18789 : 18790 };
+    var paths = { cliproxy: "/management.html", gateway: "" };
+    document.querySelectorAll("#linksList a[data-port-type]").forEach(function (a) {
+      var type = a.getAttribute("data-port-type");
+      if (ports[type] !== undefined) {
+        a.href = "http://" + host + ":" + ports[type] + paths[type];
+      }
+    });
+  })();
+
   // 常用命令
   var commandsList = document.getElementById("commandsList");
   function renderCommands(commands) {

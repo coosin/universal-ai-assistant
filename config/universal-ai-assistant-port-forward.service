@@ -1,0 +1,12 @@
+[Unit]
+Description=Universal AI Assistant 端口转发 (9080/18790/8318)
+Before=universal-ai-assistant.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/home/cool/universal-ai-assistant/scripts/port_forward.sh setup
+WorkingDirectory=/home/cool/universal-ai-assistant
+
+[Install]
+WantedBy=multi-user.target

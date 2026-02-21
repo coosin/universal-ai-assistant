@@ -85,6 +85,9 @@ ALLOWED_SCRIPTS = {
     "git_pull": "scripts/git_pull.sh",
     "git_quick_push": "scripts/git_quick_push.sh",
     "sync_remote_config": "scripts/sync_remote_config.sh",
+    "start_cliproxyapi": "scripts/start_cliproxyapi.sh",
+    "health_check": "scripts/health_check.sh",
+    "sync_install_cron": "scripts/sync_install_cron.sh",
 }
 
 
@@ -101,9 +104,10 @@ def api_run_script(script_id):
     full_path = ROOT / path
     if not full_path.exists():
         return jsonify({"ok": False, "output": f"脚本不存在: {path}"}), 404
+    run_cmd = ["bash", str(full_path)] + args
     try:
         proc = subprocess.run(
-            ["bash", str(full_path)] + args,
+            run_cmd,
             capture_output=True,
             text=True,
             timeout=60,
@@ -120,17 +124,17 @@ def api_run_script(script_id):
 
 @app.route("/api/commands")
 def api_commands():
-    """返回常用命令列表，供面板展示"""
+    """返回常用命令列表，供面板展示（仅保留可执行的实用功能）"""
     return jsonify({
         "commands": [
-            {"id": "start_all_services", "label": "一键启动（后台）", "cmd": "cd ~/universal-ai-assistant && ./scripts/start_all_services.sh --background", "runnable": True},
-            {"id": "doctor", "label": "Doctor 完整检查", "cmd": "./scripts/doctor.sh", "runnable": True},
-            {"id": "port_forward", "label": "端口转发状态", "cmd": "sudo bash scripts/port_forward.sh status", "runnable": False},
-            {"id": "sync_to_home", "label": "同步 myhome→home", "cmd": "cd ~/universal-ai-assistant && bash scripts/sync_myhome_to_home.sh", "runnable": False, "note": "在 myhome 执行"},
-            {"id": "sync_from_home", "label": "同步 home→myhome", "cmd": "cd ~/universal-ai-assistant && bash scripts/sync_pull_from_home.sh", "runnable": False, "note": "在 myhome 执行"},
+            {"id": "start_all_services", "label": "一键启动所有服务", "cmd": "cd ~/universal-ai-assistant && ./scripts/start_all_services.sh --background", "runnable": True},
+            {"id": "start_cliproxyapi", "label": "启动 CLIProxyAPI", "cmd": "cd ~/universal-ai-assistant && ./scripts/start_cliproxyapi.sh", "runnable": True},
+            {"id": "health_check", "label": "健康检查", "cmd": "cd ~/universal-ai-assistant && ./scripts/health_check.sh", "runnable": True},
+            {"id": "doctor", "label": "Doctor 完整检查", "cmd": "cd ~/universal-ai-assistant && ./scripts/doctor.sh", "runnable": True},
             {"id": "git_pull", "label": "Git 拉取", "cmd": "cd ~/universal-ai-assistant && ./scripts/git_pull.sh", "runnable": True},
             {"id": "git_quick_push", "label": "Git 快速推送", "cmd": "cd ~/universal-ai-assistant && ./scripts/git_quick_push.sh \"auto: 更新\"", "runnable": True},
-            {"id": "sync_remote_config", "label": "从仓库同步配置", "cmd": "cd ~/universal-ai-assistant && ./scripts/sync_remote_config.sh", "runnable": True, "note": "会覆盖本地 openclaw.json 等"},
+            {"id": "sync_remote_config", "label": "从仓库同步配置", "cmd": "cd ~/universal-ai-assistant && ./scripts/sync_remote_config.sh", "runnable": True},
+            {"id": "sync_install_cron", "label": "安装 home→myhome 自动同步", "cmd": "cd ~/universal-ai-assistant && bash scripts/sync_install_cron.sh", "runnable": True, "note": "需先配 SSH 免密到 myhome"},
         ]
     })
 

@@ -1,0 +1,19 @@
+[Unit]
+Description=Universal AI Assistant (Web + Gateway + CLIProxyAPI)
+After=network-online.target docker.service clash.service universal-ai-assistant-port-forward.service
+Wants=network-online.target docker.service clash.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+User=cool
+WorkingDirectory=/home/cool/universal-ai-assistant
+ExecStart=/home/cool/universal-ai-assistant/scripts/start_all_services.sh --background
+# 继承用户环境（PATH、openclaw 等）
+Environment=PATH=/usr/local/bin:/usr/bin:/bin:/home/cool/.local/bin
+StandardOutput=journal
+StandardError=journal
+TimeoutStartSec=120
+
+[Install]
+WantedBy=multi-user.target

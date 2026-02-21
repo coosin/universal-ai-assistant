@@ -7,15 +7,22 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 cd "$ROOT"
 
-# 加载 .env
+# 加载 .env（export 后子进程如 openclaw 会继承 HTTP_PROXY 等）
 [ -f "$ROOT/.env" ] && set -a && source "$ROOT/.env" && set +a
+export HTTP_PROXY HTTPS_PROXY NO_PROXY 2>/dev/null || true
 
 echo "=== 启动 Universal AI Assistant 服务 ==="
+
+# 0. 端口转发（需 sudo -n 无密码，否则跳过）
+sudo -n bash "$SCRIPT_DIR/port_forward.sh" setup 2>/dev/null || true
 
 # 1. CLIProxyAPI（Docker）
 if docker images --format '{{.Repository}}' | grep -q 'eceasy/cli-proxy-api'; then
   echo "[1/3] 启动 CLIProxyAPI..."
-  docker-compose -f "$ROOT/docker-compose.yml" up -d 2>/dev/null || docker compose -f "$ROOT/docker-compose.yml" up -d 2>/dev/null || true
+  if ! (docker-compose -f "$ROOT/docker-compose.yml" up -d 2>/dev/null || docker compose -f "$ROOT/docker-compose.yml" up -d 2>/dev/null); then
+    # docker-compose 可能因旧容器报错，尝试直接启动已有容器
+    docker ps -a --filter "ancestor=eceasy/cli-proxy-api" --format '{{.ID}}' | xargs -r docker start 2>/dev/null || true
+  fi
   sleep 2
 else
   echo "[1/3] CLIProxyAPI 镜像未拉取，跳过（网络恢复后执行: docker-compose -f docker-compose.yml pull && docker-compose up -d）"
@@ -33,11 +40,16 @@ fi
 
 # 3. OpenClaw Gateway
 echo "[3/3] 启动 OpenClaw Gateway..."
+openclaw gateway stop 2>/dev/null || true
+sleep 2
+# 强制释放 18789 端口（便于 .env 变更后重启生效）
 if ss -tlnp 2>/dev/null | grep -q ':18789 '; then
-  echo "  Gateway 已在运行 (端口 18789)"
+  fuser -k 18789/tcp 2>/dev/null || true
+  sleep 2
+fi
+if ss -tlnp 2>/dev/null | grep -q ':18789 '; then
+  echo "  Gateway 已在运行 (端口 18789)，未重启"
 else
-  openclaw gateway stop 2>/dev/null || true
-  sleep 1
   if [ "$1" = "--background" ]; then
     nohup openclaw gateway --port 18789 --verbose >> "$ROOT/openclaw-gateway.log" 2>&1 &
     sleep 2
