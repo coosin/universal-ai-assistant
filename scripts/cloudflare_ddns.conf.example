@@ -1,0 +1,12 @@
+# Cloudflare DDNS 配置文件示例
+# 复制为 cloudflare_ddns.conf 并填入你的凭证
+
+# 方式 1：使用 API Token（推荐，更安全）
+# 在 Cloudflare 控制台：My Profile -> API Tokens -> Create Token
+# 权限：Zone -> DNS -> Edit
+# 资源：Include -> Specific zone -> qlsm.net
+export CF_API_TOKEN="你的API_Token"
+
+# 方式 2：使用 Global API Key + Email（备选，不推荐）
+# export CF_EMAIL="your-email@example.com"
+# export CF_API_KEY="your-global-api-key"

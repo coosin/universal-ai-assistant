@@ -74,5 +74,6 @@ git push -u origin main && git push -u origin develop
 
 ## 复盘与排障
 
+- **系统介绍（供 AI 接手）**：`docs/系统介绍-供AI接手开发维护.md` — 项目全貌、配置路径、运维命令、无效命令清单
 - 过程总结与最终收尾清单：`docs/开发复盘与收尾.md`
 - OpenClaw 调用链路与“计费不足”来源：`docs/OpenClaw与CLIProxy调用逻辑.md`

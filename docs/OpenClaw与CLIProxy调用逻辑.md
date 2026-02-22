@@ -22,8 +22,8 @@
 
 5. **Fallback（备用模型）**  
    若这次请求**失败**（包括 CLIProxy 返回“计费不足”等错误），OpenClaw 会按 **`agents.defaults.model.fallbacks`** 里的顺序，**依次换下一个模型**再试，直到成功或全部失败。  
-   你当前顺序大致是：  
-   **primary** → **cliproxy/claude-opus** → **openai-codex/gpt-5.3-codex** → **openrouter/openrouter/free**。
+   当前优化后的顺序（优先有额度且推理强的模型）：  
+   **primary** → **fallback1** → **fallback2** → …（见 `openclaw.json` 中 `agents.defaults.model`）
 
 所以：**OpenClaw 只负责“选哪个 provider/模型、往哪个 baseUrl 发请求、失败后换 fallback”；真正做计费校验并返回“计费不足”的是 CLIProxy（以及背后的 Claude/厂商账号）。**
 
@@ -56,3 +56,29 @@
 | 收到错误后换 fallback 再试         | OpenClaw |
 
 因此：**调用逻辑是 OpenClaw → CLIProxy（8317）→ 厂商；老是显示计费不足，是因为 primary 用的是 CLIProxy 的 Claude，而该账号额度不足，CLIProxy 先报错，OpenClaw 再按 fallback 换别的模型。**
+
+---
+
+## 四、「先显示余额不足，然后马上正常」说明
+
+这是 **OpenClaw 的 fallback 机制在按设计工作**，不是异常：
+
+1. **第一次请求**：用 **primary** 模型（例如 `openrouter/openrouter/free`）发请求。
+2. **若上游返回 402/余额不足**：OpenClaw 会**先把这条错误展示给你**，再按 `fallbacks` 顺序换下一个模型重试。
+3. **第二次请求**：用第一个 fallback（例如 `cliproxy/openrouter-free`）再发，若该模型/账号有额度就成功，所以你看到「马上正常」。
+
+所以会「先余额不足再正常」= primary 用的 key/账号没额度 → 报错展示 → fallback 用另一个 key/模型成功。
+
+**若希望尽量不看到这条提示**：
+
+- 保证 **primary** 使用的 API Key 在对应平台有可用额度（例如 OpenRouter 新 key 已在 `.env` 与 CLIProxyAPI 中一致配置）。
+- 重启 **OpenClaw Gateway**（以及加载了 `.env` 的进程），确保进程内读到的是新 key，这样 primary 第一次就成功，不会先 402。
+- 或把最稳定、有额度的模型放在 primary，把容易 402 的放在 fallback。
+
+---
+
+## 五、谁选模型、谁在出错时切换？（重要）
+
+- **模型选择与顺序**：由 **OpenClaw** 在 `~/.openclaw/openclaw.json` 的 `agents.defaults.model`（primary + fallbacks）里配置。**CLIProxyAPI 不选模型、不推荐模型**，只按 OpenClaw 发来的「用哪个模型」做转发；它只负责把请求发到对应厂商并返回结果或错误。
+- **出错后换模型**：也是 **OpenClaw** 在做。当某次请求返回 402/余额不足或其它错误时，OpenClaw 会按 fallbacks 顺序自动换下一个模型重试。CLIProxyAPI 只把单次请求的成功/失败返回给 OpenClaw，不会自己“推荐下一个模型”或“自动换掉”。
+- **当前优化**：已在 openclaw 中把 **primary** 设为有额度且推理较强的模型（如 `cliproxy/gemini-3-pro`），fallbacks 按强度与额度情况排序，这样第一次请求更容易成功，减少“先报余额不足再正常”的出现。

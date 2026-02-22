@@ -1,17 +1,18 @@
 # 使用 Docker Hub 官方镜像 eceasy/cli-proxy-api（勿用 ghcr.io，易 403 denied）
+# host 网络 + 本机 Clash 代理，使容器能访问上游 API（SiliconFlow/Claude/OpenRouter 等）
 services:
   cliproxyapi:
     image: eceasy/cli-proxy-api:latest
     container_name: cliproxyapi
     restart: unless-stopped
-    ports:
-      - "8317:8317"
-      - "54545:54545"
+    network_mode: host
     volumes:
       - ~/.cliproxyapi/config/config.yaml:/CLIProxyAPI/config.yaml
       - ~/.cliproxyapi/auths:/root/.cli-proxy-api
     environment:
       - CONFIG_PATH=/CLIProxyAPI/config.yaml
+      - HTTP_PROXY=http://127.0.0.1:7890
+      - HTTPS_PROXY=http://127.0.0.1:7890
 networks:
   default:
     name: ai-network
