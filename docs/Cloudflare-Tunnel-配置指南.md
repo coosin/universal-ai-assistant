@@ -173,6 +173,17 @@ ingress:
 | "credentials file not found" | 检查 `~/.cloudflared/<隧道ID>.json` 是否存在 |
 | "DNS already exists" | DNS 路由已存在，可跳过或删除后重建 |
 | 访问超时 | 检查 Tunnel 服务是否运行，查看日志 |
+| **Error 1033（隧道错误）** | 见下方「错误 1033 与 no route to host」 |
+
+### 错误 1033 与 no route to host
+
+- **错误 1033**：表示 Cloudflare 端收不到隧道连接，页面上会显示「Cloudflare 隧道错误」。
+- **日志里 QUIC 超时**（`failed to dial to edge with quic: timeout`）：国内网络常干扰 QUIC/UDP。已在配置中启用 **HTTP/2（TCP）**：`~/.cloudflared/config.yml` 里增加 `protocol: http2`，服务启动参数加 `--protocol http2`。
+- **日志里 no route to host**（`dial tcp 198.41.x.x:7844: connect: no route to host`）：本机网络到 Cloudflare 边缘 IP 无路由，国内家庭宽带较常见。cloudflared **不支持**通过 `HTTPS_PROXY` 建隧道，只能直连。
+- **可选方案**：
+  1. **换网络**：在能直连 Cloudflare 的网络下用 Tunnel（如海外 VPS、某些 VPN 出口）。
+  2. **代理建隧道**：用 `proxychains` 等让 cloudflared 走 SOCKS/HTTP 代理（需代理能访问 Cloudflare），例如：`proxychains4 cloudflared tunnel --config ~/.cloudflared/config.yml run openclaw`，并将 Tunnel 的 systemd 服务改为通过 proxychains 启动。
+  3. **不用 Tunnel**：外网改走 Tailscale、SSH 反向隧道、或仅在内网用 `http://本机IP:8888` / `http://本机IP:18789`。
 
 ---
 

@@ -1,0 +1,17 @@
+[Unit]
+Description=Universal AI Assistant Web 管理界面 (8888)
+After=network-online.target openclaw-gateway.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/cool/universal-ai-assistant
+ExecStart=/home/cool/universal-ai-assistant/venv/bin/python3 web/app.py
+Restart=always
+RestartSec=5
+Environment=HOST=0.0.0.0
+Environment=PORT=8888
+Environment=PATH=/home/cool/.local/bin:/usr/local/bin:/usr/bin:/bin
+
+[Install]
+WantedBy=default.target

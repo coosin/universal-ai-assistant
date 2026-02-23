@@ -68,7 +68,7 @@ docker-compose -f docker-compose.yml up -d 2>/dev/null || docker compose -f dock
 sleep 2
 if docker ps --format '{{.Names}}' | grep -q cliproxyapi; then
   echo "  CLIProxyAPI 已启动"
-  echo "  管理界面: http://<本机IP>:8318 或 http://<本机IP>:54545"
+  echo "  管理界面: http://<本机IP>:8317/management.html"
 else
   echo "  启动异常，请检查: docker logs cliproxyapi"
 fi

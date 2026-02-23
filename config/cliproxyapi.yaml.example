@@ -1,5 +1,7 @@
 # CLIProxyAPI 配置示例（官方格式，端口 8317）
 # 复制到 ~/.cliproxyapi/config/config.yaml 使用
+# 更多选项（proxy-url、logging、passthrough-headers 等）见上游 config.example.yaml：
+#   https://github.com/router-for-me/CLIProxyAPI
 host: ""
 port: 8317
 

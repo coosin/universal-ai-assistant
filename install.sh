@@ -28,6 +28,14 @@ if [ -d skills ]; then
 fi
 [ -f templates/CLAUDE.md ] && cp templates/CLAUDE.md ~/.openclaw/workspace/coding/ 2>/dev/null || true
 
+echo "[4.5/5] Web 依赖 (venv + Flask)..."
+mkdir -p "$SCRIPT_DIR"
+if [ ! -d "$SCRIPT_DIR/venv" ]; then
+  python3 -m venv "$SCRIPT_DIR/venv" && "$SCRIPT_DIR/venv/bin/pip" install -r "$SCRIPT_DIR/web/requirements.txt" 2>/dev/null && echo "  已创建 venv 并安装 Flask" || echo "  请稍后手动: cd $SCRIPT_DIR && python3 -m venv venv && venv/bin/pip install -r web/requirements.txt"
+else
+  echo "  venv 已存在"
+fi
+
 echo "[5/5] 启动 CLIProxyAPI (Docker)..."
 if [ -f "$SCRIPT_DIR/docker-compose.yml" ]; then
   (docker compose -f "$SCRIPT_DIR/docker-compose.yml" up -d 2>/dev/null) || (docker-compose -f "$SCRIPT_DIR/docker-compose.yml" up -d 2>/dev/null) || echo "请手动执行: docker compose up -d"

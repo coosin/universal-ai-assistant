@@ -28,12 +28,18 @@ else
   echo "[1/3] CLIProxyAPI 镜像未拉取，跳过（网络恢复后执行: docker-compose -f docker-compose.yml pull && docker-compose up -d）"
 fi
 
-# 2. Web 管理界面
+# 2. Web 管理界面（优先用 systemd 用户服务，否则 nohup 拉起）
 echo "[2/3] 启动 Web 管理界面..."
 if ! ss -tlnp 2>/dev/null | grep -q ':8888 '; then
-  (cd "$ROOT" && source venv/bin/activate 2>/dev/null && nohup python3 web/app.py >> web.log 2>&1 &)
-  sleep 2
-  echo "  Web 已启动: http://127.0.0.1:8888 (或本机 IP:9080)"
+  if systemctl --user is-active universal-ai-assistant-web.service 2>/dev/null | grep -q active; then
+    echo "  Web 由 systemd 用户服务管理，正在启动..."
+    systemctl --user start universal-ai-assistant-web.service 2>/dev/null || true
+  fi
+  if ! ss -tlnp 2>/dev/null | grep -q ':8888 '; then
+    (cd "$ROOT" && (source venv/bin/activate 2>/dev/null || true) && nohup python3 web/app.py >> web.log 2>&1 &)
+    sleep 2
+  fi
+  ss -tlnp 2>/dev/null | grep -q ':8888 ' && echo "  Web 已启动: http://127.0.0.1:8888 (或本机 IP:8888/9080)" || echo "  Web 启动失败，请检查: pip3 install -r web/requirements.txt --user"
 else
   echo "  Web 已在运行 (端口 8888)"
 fi

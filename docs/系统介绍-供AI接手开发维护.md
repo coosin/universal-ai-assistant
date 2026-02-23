@@ -1,7 +1,7 @@
 # Universal AI Assistant 系统介绍（供 AI 接手开发/维护）
 
 > 本文档面向其他 AI，帮助快速理解项目全貌，直接接手开发或维护工作。  
-> 最后更新：2026-02-22
+> 最后更新：2026-02-23
 
 ---
 
@@ -124,6 +124,7 @@
 |------|----------|------|------|
 | OpenClaw Gateway | 127.0.0.1 | 18789 | 仅 loopback，安全 |
 | 外部访问 Gateway | 本机 IP | 18790 | port_forward 转发到 127.0.0.1:18789 |
+| 外网 HTTPS（Tunnel） | home.qlsm.net | 443 | Cloudflare Tunnel，无需端口映射 |
 | Web 管理 | 127.0.0.1 | 8888 | Flask |
 | 外部访问 Web | 本机 IP | 9080 | port_forward 转发到 8888 |
 | CLIProxyAPI | 0.0.0.0 | 8317 | Docker host 网络，直连 |
@@ -267,13 +268,20 @@ openclaw status
 http://127.0.0.1:18789/?token=8f00672a94d1c43f1b74ef97a8fc2ef2
 ```
 
+**方式 C：外网访问（Cloudflare Tunnel）**
+
+- 地址：`https://home.qlsm.net/?token=8f00672a94d1c43f1b74ef97a8fc2ef2`
+- 若报「设备令牌不匹配」：在网关主机执行 `openclaw devices list`，对 Pending 设备执行 `openclaw devices approve <Request ID>`
+- 获取最新带 token 的 URL：`openclaw dashboard --no-open`（将输出中的 127.0.0.1:18789 换成 home.qlsm.net 即可）
+
 ---
 
 ## 十一、Docker 与 CLIProxyAPI
 
-- **镜像**：`eceasy/cli-proxy-api:latest`（勿用 ghcr.io，易 403）
+- **镜像**：`eceasy/cli-proxy-api:latest`（勿用 ghcr.io，易 403）。上游 [router-for-me/CLIProxyAPI](https://github.com/router-for-me/CLIProxyAPI) 当前 v6.8.x；需锁定版本时可改用 tag 如 `eceasy/cli-proxy-api:v6.8.26`。
 - **网络**：`network_mode: host`，容器直接监听 8317
-- **挂载**：`~/.cliproxyapi/config/config.yaml`、`~/.cliproxyapi/auths`
+- **挂载**：`~/.cliproxyapi/config/config.yaml`、`~/.cliproxyapi/auths`、`~/.cliproxyapi/logs`（日志持久化，可选先 `mkdir -p ~/.cliproxyapi/logs`）
+- **更新**：定期 `docker compose pull` 拉取最新镜像后 `docker compose up -d`；更多配置项见上游 `config.example.yaml`
 - **代理**：docker-compose 中 `HTTP_PROXY/HTTPS_PROXY` 指向本机 Clash（如 127.0.0.1:7890）
 
 ---
@@ -298,6 +306,7 @@ http://127.0.0.1:18789/?token=8f00672a94d1c43f1b74ef97a8fc2ef2
 | 计费不足 | primary 模型对应账号额度不足 | 充值或调整 primary/fallback 顺序 |
 | fetch failed / 网络错误 | 代理未生效或不可达 | 检查 HTTP_PROXY、Clash 是否运行 |
 | pairing required | 未设置 OPENCLAW_GATEWAY_TOKEN | export 或写入 .bashrc |
+| 1008 设备令牌不匹配 | 通过 Tunnel/外网访问视为新设备 | `openclaw devices list` → `openclaw devices approve <Request ID>`，或使用 `openclaw dashboard --no-open` 获取带 token 的 URL |
 | 端口被占用 | 旧进程未释放 | `fuser -k 18789/tcp` 或重启服务 |
 
 ---
@@ -320,7 +329,7 @@ http://127.0.0.1:18789/?token=8f00672a94d1c43f1b74ef97a8fc2ef2
 
 ### 15.1 推荐做法
 
-1. **推荐 openclaw 命令前先验证**：`openclaw <cmd> --help` 确认子命令存在。当前版本 2026.2.19-2 中，大量「看起来合理」的命令（如 `gateway pair-status`、`agents restart`、`doctor --full`）并不存在，详见 `docs/给其他AI的反馈-20260222.md`。
+1. **推荐 openclaw 命令前先验证**：`openclaw <cmd> --help` 确认子命令存在。当前版本 2026.2.21-2 中，大量「看起来合理」的命令（如 `gateway pair-status`、`agents restart`、`doctor --full`）并不存在，详见 `docs/给其他AI的反馈-20260222.md`。
 2. **修改 systemd 后必须**：`systemctl --user daemon-reload`，再 `restart openclaw-gateway`，否则不生效。
 3. **环境变量有多个入口**：`.env` 只被 `start.sh` / `start_all_services.sh` 加载；systemd 不读 `.env`，需在 service 里显式写 `Environment=`；新开 SSH 终端需 `source ~/.bashrc` 或手动 export。
 4. **排查网络问题先区分**：OpenRouter 经代理可访问；SiliconFlow (`api.siliconflow.cn`) 可能因 TLS 握手失败不可达，与代理无关，不要一味调代理。
@@ -339,7 +348,7 @@ http://127.0.0.1:18789/?token=8f00672a94d1c43f1b74ef97a8fc2ef2
 
 | 变更类型 | 生效方式 |
 |----------|----------|
-| openclaw.json | Gateway 重启（`systemctl --user restart` 或 `openclaw gateway stop` 后重启） |
+| openclaw.json | 部分变更可热加载（官网：gateway watches config and hot-reloads safe changes）；涉及 auth/port/bind 等建议重启 Gateway |
 | ~/.cliproxyapi/config/config.yaml | `docker compose restart cliproxyapi` |
 | .env | 仅对**新启动**的进程生效，已运行的 Gateway 不会重读 |
 | systemd Environment | `daemon-reload` + `restart` |
@@ -363,3 +372,9 @@ http://127.0.0.1:18789/?token=8f00672a94d1c43f1b74ef97a8fc2ef2
 - `docs/OpenClaw与CLIProxy调用逻辑.md` — 调用链与计费逻辑
 - `docs/操作命令清单-20260222.md` — 日常操作命令
 - `docs/给其他AI的反馈-20260222.md` — 无效命令与实测反馈
+- `docs/Control-UI-外网与局域网访问-长期方案.md` — Tailscale/SSH/nginx 外网访问
+- `docs/自有域名-HTTPS-配置指南.md` — nginx + Let's Encrypt 自有域名 HTTPS
+- `docs/Cloudflare-Tunnel-配置指南.md` — Cloudflare Tunnel（无需端口映射）
+- `docs/Cloudflare-DDNS-设置指南.md` — 动态 DNS 自动更新
+- `docs/路由器端口映射设置.md` — 家庭宽带端口映射
+- `docs/外网访问超时-排查与解决.md` — 超时排查
