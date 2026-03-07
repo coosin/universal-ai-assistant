@@ -1,0 +1,9 @@
+{
+  channels: {
+    telegram: {
+      enabled: true,
+      botToken: "8541109064:AAG-Fqw4sbSBaqVnFY5AiW__db7kmsxZPdE",
+      dmPolicy: "pairing",
+    },
+  },
+}

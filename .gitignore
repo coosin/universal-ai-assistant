@@ -1,0 +1,43 @@
+# 敏感信息文件
+TOOLS.md
+.env
+.secret
+*.key
+*.pem
+id_rsa*
+
+# 日志文件
+*.log
+nohup.out
+trading-bot.log
+watchdog.log
+
+# 依赖目录
+node_modules
+venv
+__pycache__
+.pnpm-store
+.cache
+
+# 临时文件
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# 系统文件
+.DS_Store
+Thumbs.db
+.openclaw/
+.clawhub/
+
+# 数据文件
+*.jsonl
+*.db
+*.sqlite
+moneymaker/assets.md
+*.md
+TOOLS.md
+memory/
+

@@ -1,0 +1,98 @@
+name: CI Test & Build
+
+on:
+  push:
+    branches: [ main, dev ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    - cron: '0 0 * * *' # 每天自动运行测试
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [22.x]
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 1
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        cache-dependency-path: './moneymaker/package-lock.json'
+
+    - name: Install dependencies
+      run: cd moneymaker && npm ci
+
+    - name: Lint code
+      run: cd moneymaker && npm run lint --if-present
+
+    - name: Run unit tests
+      run: cd moneymaker && npm test --if-present
+
+    - name: Test OKX API connection
+      run: |
+        cd moneymaker
+        node test-okx.js --dry-run || echo "API test skipped (need proxy)"
+
+    - name: Static security scan
+      uses: snyk/actions/node@master
+      env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      continue-on-error: true
+
+  security:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Secret scanning
+      uses: secret-scanning/action@v1
+      with:
+        path: '.'
+        exclude-paths: |
+          node_modules/
+          .git/
+          *.log
+
+    - name: Dependency vulnerability scan
+      uses: actions/dependency-review-action@v3
+
+  build:
+    needs: [test, security]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Build production package
+      run: |
+        cd moneymaker
+        npm ci --only=production
+        zip -r coosin-trading-system.zip ./*.js ./*.sh package*.json
+    
+    - name: Upload build artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: coosin-trading-system
+        path: moneymaker/coosin-trading-system.zip
+
+  notify:
+    needs: [test, security, build]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+    - name: Send notification
+      uses: sarisia/actions-status-discord@v1
+      if: always()
+      with:
+        webhook: ${{ secrets.DISCORD_WEBHOOK }}
+        status: ${{ job.status }}
+        title: "CI Build Result"
+        description: "Coosin trading system test completed"

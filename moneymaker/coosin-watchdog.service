@@ -1,0 +1,16 @@
+[Unit]
+Description=Coosin System Watchdog
+After=network.target
+
+[Service]
+Type=simple
+User=cool
+WorkingDirectory=/home/cool/.openclaw/workspace/moneymaker
+ExecStart=/home/cool/.openclaw/workspace/moneymaker/watchdog.sh
+Restart=always
+RestartSec=10
+StandardOutput=journal+console
+StandardError=journal+console
+
+[Install]
+WantedBy=multi-user.target
