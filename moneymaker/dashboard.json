@@ -1,0 +1,48 @@
+{
+  "timestamp": "2026/3/9 22:14:54",
+  "account": {
+    "totalEquity": 39.30442551956931,
+    "available": 6.466332643156334,
+    "unrealizedPnL": 0,
+    "dailyPnL": 9.178959776581408
+  },
+  "positions": [
+    {
+      "symbol": "ETH-USDT-SWAP",
+      "size": 0.1,
+      "avgPx": 2011.09,
+      "pnl": -0.0181000000000017,
+      "pnlRatio": -1.8100000000001701,
+      "marginRatio": 7361.102713228932,
+      "liqPx": 2667.667858950357
+    }
+  ],
+  "market": [
+    {
+      "symbol": "BTC",
+      "price": 68801.9,
+      "change24h": 2.2970099766566965,
+      "volatility": 5.646751638402928
+    },
+    {
+      "symbol": "ETH",
+      "price": 2012.97,
+      "change24h": 3.4600262123197867,
+      "volatility": 6.340670859538785
+    },
+    {
+      "symbol": "SOL",
+      "price": 84.75,
+      "change24h": 3.2151991231275128,
+      "volatility": 6.911177644710587
+    }
+  ],
+  "system": {
+    "marketMonitor": true,
+    "riskMonitor": true,
+    "tradingStrategy": true,
+    "network": {
+      "latency": 194
+    }
+  }
+}

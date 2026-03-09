@@ -1,0 +1,28 @@
+{
+  "name": "coosin-trading-app",
+  "version": "1.0.0",
+  "description": "Coosin 量化交易系统移动端APP",
+  "main": "index.js",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web",
+    "build": "expo build:android && expo build:ios"
+  },
+  "dependencies": {
+    "expo": "~50.0.0",
+    "react": "18.2.0",
+    "react-native": "0.73.0",
+    "axios": "^1.6.0",
+    "react-native-chart-kit": "^6.12.0",
+    "react-native-svg": "^14.1.0",
+    "@react-navigation/native": "^6.1.0",
+    "@react-navigation/native-stack": "^6.9.0",
+    "react-native-screens": "~3.29.0",
+    "react-native-safe-area-context": "4.8.2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.20.0"
+  }
+}
